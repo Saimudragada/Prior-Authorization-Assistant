@@ -194,7 +194,7 @@ Request: Continuous Glucose Monitor (CGM)
 
 **Sai Mudragada**  
 MBA in Business Analytics | Midwestern State University  
-📧 [Your Email] | 💼 [LinkedIn](https://linkedin.com/in/yourprofile) | 🌐 [Portfolio](https://yourportfolio.com)
+📧 [saimudragada1@gmail.com] | 💼 [LinkedIn](https://linkedin.com/in/yourprofile) | 🌐 [Portfolio](https://yourportfolio.com)
 
 *Specializing in Applied AI for Healthcare Process Automation*
 
