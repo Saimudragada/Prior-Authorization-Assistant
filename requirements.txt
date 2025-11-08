@@ -10,7 +10,6 @@ streamlit==1.39.0
 
 # RAG & parsing
 pymupdf==1.24.11
-tiktoken==0.7.0
 
 # Embeddings / LLM clients
 openai==1.51.2
