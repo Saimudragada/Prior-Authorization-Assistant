@@ -1,0 +1,22 @@
+cat > .gitignore << 'EOF'
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# macOS
+.DS_Store
+
+# Data
+data/raw_policies/*
+!data/raw_policies/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# VSCode
+.vscode/
+EOF
+
+touch data/raw_policies/.gitkeep
+touch data/processed/.gitkeep

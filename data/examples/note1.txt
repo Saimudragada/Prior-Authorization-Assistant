@@ -1,0 +1,24 @@
+Patient: Jane Doe (MRN 12345)
+DOB: 1975-08-03   Sex: F
+Date of service: 2025-10-20
+
+Chief complaint: uncontrolled diabetes, needs CGM.
+
+Assessment:
+Type 2 diabetes mellitus with hyperglycemia (ICD-10 E11.65).
+Peripheral neuropathy suspected.
+
+Plan:
+Request implantable continuous glucose monitor (I-CGM).
+
+Recent labs:
+HbA1c: 9.2% (collected 2025-09-30)
+Fasting glucose: 175 mg/dL (2025-10-05)
+
+Medications:
+Metformin ER 1000 mg PO BID (active, started 2023-11-10)
+Insulin glargine 10 units SC nightly (active, started 2024-07-01)
+Lisinopril 10 mg PO daily (active)
+
+Vitals:
+BP 128/78 mmHg, weight 82 kg, height 165 cm
