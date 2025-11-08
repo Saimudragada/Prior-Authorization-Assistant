@@ -17,7 +17,7 @@ An intelligent automation system that reduces healthcare administrative burden b
 - 🎯 **Automated eligibility assessment** with 95%+ accuracy
 - ⚡ **60% reduction** in manual processing time
 - 🏥 **Clinical note extraction** from unstructured text using LLMs
-- 📋 **Policy-compliant** justification letter generation
+- 📋 **Policy-compliant** justification letter generation.
 
 ---
 
