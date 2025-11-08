@@ -1,16 +1,17 @@
 import os, json, io, sys
 import streamlit as st
 
-# Add parent directory to path so we can import from rag/
+# Add parent directory to path so we can import from rag/ and app/
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import RAG functions directly
+# Import functions with correct names
 try:
-    from rag.clinical_extractor import extract_patient_data
-    from rag.eligibility import assess_eligibility
-    from app.justification import generate_justification
+    from rag.clinical_extractor import extract_patient_summary
+    from app.eligibility import evaluate_icgm
+    from app.justification import build_justification_letter
 except ImportError as e:
-    st.error(f"Import error: {e}. Make sure rag modules are available.")
+    st.error(f"Import error: {e}. Make sure rag and app modules are available.")
+    st.exception(e)
     st.stop()
 
 st.set_page_config(page_title="PA Assistant", page_icon="🩺", layout="wide")
@@ -88,35 +89,40 @@ if run:
     
     try:
         with st.spinner("🔍 Extracting patient data..."):
-            # Step 1: Extract patient data using Gemini
-            summary = extract_patient_data(note_text)
+            # Step 1: Extract patient data using Gemini (returns dict)
+            summary = extract_patient_summary(note_text)
         
         with st.spinner("✅ Assessing eligibility..."):
-            # Step 2: Assess eligibility
-            decision = assess_eligibility(summary)
+            # Step 2: Assess eligibility (returns tuple: bool, list)
+            meets_criteria, missing_info = evaluate_icgm(summary)
         
         with st.spinner("📝 Generating justification letter..."):
-            # Step 3: Generate justification (simplified - no policy retrieval for now)
-            justification_letter = generate_justification(
+            # Step 3: Generate justification letter
+            # Mock policy hits for demo (no vector retrieval in cloud)
+            mock_hits = [{
+                "document": "Continuous glucose monitoring is medically necessary for patients with Type 1 diabetes who meet criteria including HbA1c >7%, intensive insulin therapy, and documented hypoglycemia.",
+                "metadata": {"source": "CGM_Policy.pdf", "page": 3}
+            }]
+            
+            justification_letter = build_justification_letter(
                 summary=summary,
-                decision=decision,
-                citations=[]  # Simplified: no policy retrieval in cloud demo
+                meets_criteria=meets_criteria,
+                missing_information=missing_info,
+                policy_hits=mock_hits
             )
         
         # Display results
         st.success("✨ Assessment complete!")
         
         st.subheader("2) Decision")
-        meets = decision.get("meets_criteria", False)
-        missing = decision.get("missing_information", [])
         
-        if meets:
+        if meets_criteria:
             st.success("✅ Eligible - Meets criteria for CGM")
         else:
             st.warning("⚠️ More information needed")
-            if missing:
+            if missing_info:
                 st.write("**Missing information:**")
-                for item in missing:
+                for item in missing_info:
                     st.write(f"- {item}")
 
         st.subheader("3) Patient Summary (Extracted)")
@@ -131,26 +137,43 @@ if run:
             st.write(f"Sex: {summary.get('sex', 'N/A')}")
             
             st.markdown("**Diagnoses**")
-            for dx in summary.get('diagnoses', []):
-                st.write(f"- {dx.get('description', 'N/A')} ({dx.get('code', 'N/A')})")
+            diagnoses = summary.get('diagnoses', [])
+            if diagnoses:
+                for dx in diagnoses:
+                    code = dx.get('code', 'N/A')
+                    desc = dx.get('description', 'N/A')
+                    st.write(f"- {desc} ({code})")
+            else:
+                st.write("No diagnoses extracted")
         
         with col2:
             st.markdown("**Labs**")
-            for lab in summary.get('labs', []):
-                st.write(f"- {lab.get('name', 'N/A')}: {lab.get('value', 'N/A')} {lab.get('unit', '')}")
+            labs = summary.get('labs', [])
+            if labs:
+                for lab in labs:
+                    name = lab.get('name', 'N/A')
+                    value = lab.get('value', 'N/A')
+                    unit = lab.get('unit', '')
+                    st.write(f"- {name}: {value} {unit}")
+            else:
+                st.write("No labs extracted")
             
             st.markdown("**Medications**")
-            for med in summary.get('meds', []):
-                st.write(f"- {med.get('name', 'N/A')}")
+            meds = summary.get('meds', [])
+            if meds:
+                for med in meds:
+                    st.write(f"- {med.get('name', 'N/A')}")
+            else:
+                st.write("No medications extracted")
 
         # Show raw JSON in expander
         with st.expander("📄 View Raw JSON"):
             st.json(summary)
 
         st.subheader("4) Policy Citations")
-        st.info("💡 Policy retrieval is simplified in the cloud demo. In production, this would show relevant insurance policy excerpts.")
+        st.info("💡 Policy retrieval is simplified in the cloud demo. In production, this would show relevant insurance policy excerpts from the vector database.")
         
-        # Mock citations for demo
+        # Show mock citations
         st.write("- **p.3** — `CGM_Coverage_Policy.pdf`")
         st.caption("Continuous glucose monitoring is medically necessary for patients with Type 1 diabetes who meet the following criteria: HbA1c >7%, intensive insulin therapy, and documented hypoglycemia...")
 
@@ -168,7 +191,7 @@ if run:
         )
         
     except Exception as e:
-        st.error(f"❌ Error during assessment: {e}")
+        st.error(f"❌ Error during assessment: {str(e)}")
         st.exception(e)
         st.stop()
 
