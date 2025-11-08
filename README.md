@@ -17,7 +17,7 @@ An intelligent automation system that reduces healthcare administrative burden b
 - 🎯 **Automated eligibility assessment** with 95%+ accuracy
 - ⚡ **60% reduction** in manual processing time
 - 🏥 **Clinical note extraction** from unstructured text using LLMs
-- 📋 **Policy-compliant** justification letter generation
+- 📋 **Policy-compliant** justification letter generation.
 
 ---
 
@@ -194,7 +194,7 @@ Request: Continuous Glucose Monitor (CGM)
 
 **Sai Mudragada**  
 MBA in Business Analytics | Midwestern State University  
-📧 [Your Email] | 💼 [LinkedIn](https://linkedin.com/in/yourprofile) | 🌐 [Portfolio](https://yourportfolio.com)
+📧 [saimudragada1@gmail.com] | 💼 [LinkedIn](https://linkedin.com/in/yourprofile) | 🌐 [Portfolio](https://yourportfolio.com)
 
 *Specializing in Applied AI for Healthcare Process Automation*
 
