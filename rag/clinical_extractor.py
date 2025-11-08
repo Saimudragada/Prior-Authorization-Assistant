@@ -3,7 +3,14 @@ import os, json, re
 from typing import Any, Dict, List
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted
-from app.schemas import PatientSummary
+
+# Optional import - avoid circular dependency for Streamlit
+try:
+    from app.schemas import PatientSummary
+    HAS_SCHEMAS = True
+except ImportError:
+    HAS_SCHEMAS = False
+    PatientSummary = None
 
 SYSTEM_PROMPT = """You are a clinical information extractor.
 Extract a structured patient summary from the provided clinical note.
@@ -103,9 +110,13 @@ def _regex_extract(note_text: str) -> Dict[str, Any]:
         "vitals": vitals,
         "note_date": note_date,
     }
-    # validate with pydantic
-    summary = PatientSummary.model_validate(data)
-    return json.loads(summary.model_dump_json())
+    
+    # Validate with pydantic if available, otherwise return as-is
+    if HAS_SCHEMAS and PatientSummary:
+        summary = PatientSummary.model_validate(data)
+        return json.loads(summary.model_dump_json())
+    else:
+        return data
 
 # ---------- PUBLIC API ----------
 def extract_patient_summary(note_text: str) -> Dict[str, Any]:
@@ -128,8 +139,14 @@ def extract_patient_summary(note_text: str) -> Dict[str, Any]:
                 data = json.loads(text[start:end+1])
             else:
                 raise
-        summary = PatientSummary.model_validate(data)
-        return json.loads(summary.model_dump_json())
+        
+        # Validate with pydantic if available, otherwise return as-is
+        if HAS_SCHEMAS and PatientSummary:
+            summary = PatientSummary.model_validate(data)
+            return json.loads(summary.model_dump_json())
+        else:
+            return data
+            
     except ResourceExhausted:
         # Quota exhausted → fallback to regex
         return _regex_extract(note_text)
